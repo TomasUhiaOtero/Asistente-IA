@@ -11,6 +11,7 @@ app.use(express.json());
 const client = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
 app.post("/generate", async (req, res) => {
+    console.log("Peticion recibida: ", req.body);
 
     try {
         const { text, mode } = req.body;
@@ -24,6 +25,8 @@ app.post("/generate", async (req, res) => {
             prompt = `Resume este texto en 150 palabras:\n\n${text}`;
         }
 
+        console.log("Llamando a OpenAI... ");
+
         const response = await client.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
@@ -33,6 +36,7 @@ app.post("/generate", async (req, res) => {
             temperature: 0.7,
         });
 
+        console.log("Respuesta de OpenAI: ", response.choices[0].message.content);
 
         res.json({ response: response.choices[0].message.content });
     }

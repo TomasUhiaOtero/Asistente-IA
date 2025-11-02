@@ -18,11 +18,11 @@ app.post("/generate", async (req, res) => {
 
         let prompt = "";
         if (mode === "Preguntas tipo test") {
-            prompt = `Genera 5 preguntas tipo test sobre el siguiente texto, con 4 opciones (A-D) y la respuesta correcta:\n\n${text}`;
+            prompt = `Genera 10 preguntas tipo test sobre el siguiente texto, con 4 opciones (A-D) sin mostrar la respuesta correcta hasta el final del examen: \n\n${text} decoralas con emoticonos o lo necesario apra que sea mas atractivo visualmente`;
         } else if (mode === "Flashcards") {
-            prompt = `Crea 10 flashcards educativas (Pregunta / Respuesta) a partir de este texto:\n\n${text}`;
+            prompt = `Crea 10 flashcards educativas visualmente atractivas con emoticonos etc (Pregunta / Respuesta) a partir de este texto:\n\n${text}`;
         } else {
-            prompt = `Resume este texto en 150 palabras:\n\n${text}`;
+            prompt = `Resume este texto en 150 palabras:\n\n${text} destacando en negrita las palabras clave del resumen`;
         }
 
         console.log("Llamando a OpenAI... ");

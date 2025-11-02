@@ -10,7 +10,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
 
-  
+
   // Llamada a la API para generar el contenido
   const handleGenerate = async () => {
     if (!text.trim()) return alert("Por favor, escribe un texto o tema.");
@@ -22,7 +22,7 @@ function App() {
         text,
         mode,
       });
-      setResult(res.data.result);
+      setResult(res.data.response);
     } catch (err) {
       console.error(err);
       alert("Error al generar contenido");
@@ -61,9 +61,16 @@ function App() {
 
 
       {result && (
-        <div className="mt-6 w-full max-w-xl bg-white shadow p-4 rounded">
-          <h2 className="text-xl font-semibold mb-2">Resultado:</h2>
-          <pre className="whitespace-pre-wrap">{result}</pre>
+        <div
+          className="w-full max-w-xl mt-6 p-4 rounded-2xl
+               bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950
+               border border-gray-700 text-gray-100
+               shadow-lg shadow-purple-900/30 animate-fade-in"
+        >
+          <h2 className="text-2xl font-bold text-purple-400 mb-3">📖 Resultado:</h2>
+          <pre className="whitespace-pre-wrap text-gray-200 leading-relaxed">
+            {result}
+          </pre>
         </div>
       )}
     </div>

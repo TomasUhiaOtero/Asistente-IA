@@ -1,0 +1,82 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
+
+.glitch {
+    position: relative;
+    font-family: "Poppins", sans-serif;
+    font-size: 6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #a78bfa, #7c3aed, #5b21b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: all 0.3s ease;
+    animation: flicker 1.5s infinite; /* Animación de flicker automática */
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+
+.glitch::before {
+    animation: glitch-1 0.8s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 35%, 0 65%);
+    transform: translate(-0.025em, -0.0125em);
+    color: #c4b5fd;
+    z-index: -1;
+}
+
+.glitch::after {
+    animation: glitch-2 0.8s infinite;
+    clip-path: polygon(0 65%, 100% 35%, 100% 100%, 0 100%);
+    transform: translate(0.0125em, 0.025em);
+    color: #7c3aed;
+    z-index: -2;
+}
+
+/* Keyframes para los glitches */
+@keyframes glitch-1 {
+    0%, 14%, 15%, 49%, 50%, 99%, 100% {
+        opacity: 1;
+        transform: translate(-0.025em, -0.0125em);
+    }
+    1%, 12% {
+        opacity: 0.8;
+        transform: translate(-0.035em, -0.0225em);
+    }
+    2%, 11% {
+        opacity: 0.9;
+        transform: translate(0.025em, 0.0125em);
+    }
+}
+
+@keyframes glitch-2 {
+    0%, 20%, 21%, 62%, 63%, 99%, 100% {
+        opacity: 1;
+        transform: translate(0.0125em, 0.025em);
+    }
+    1%, 19% {
+        opacity: 0.8;
+        transform: translate(0.0225em, 0.035em);
+    }
+    2%, 18% {
+        opacity: 0.9;
+        transform: translate(-0.0125em, -0.025em);
+    }
+}
+
+/* Keyframes de flicker automático */
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow: 0.05em 0 0 #c4b5fd, -0.025em -0.05em 0 #7c3aed, 0.025em 0.05em 0 #a78bfa;
+    }
+    20%, 24%, 55% {
+        text-shadow: none;
+    }
+}

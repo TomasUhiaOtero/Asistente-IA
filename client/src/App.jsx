@@ -1,4 +1,7 @@
 import { useState } from "react";
+import CustomSelect from "./components/customSelect";
+import ActionBar from "./components/actionBar";
+import GlitchH1 from "./components/GlitchH1";
 import axios from "axios";
 
 function App() {
@@ -7,6 +10,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
 
+  
+  // Llamada a la API para generar el contenido
   const handleGenerate = async () => {
     if (!text.trim()) return alert("Por favor, escribe un texto o tema.");
 
@@ -26,34 +31,34 @@ function App() {
     }
   };
 
+  // Función para borrar el texto
+  const handleClearText = () => {
+    setText("");
+    setResult("");
+  };
+
   return (
-    <div className="min-h-screen bg-gray-500 flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold mb-4">🧠 Asistente de Estudio con IA</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-indigo-900 to-purple-900 flex flex-col items-center p-6">
+      <GlitchH1 text="Asistente de Estudio con IA" />
+      {/* Selector de modo */}
+      <CustomSelect mode={mode} setMode={setMode} />
 
-      <select
-        value={mode}
-        onChange={(e) => setMode(e.target.value)}
-        className="border p-2 rounded mb-4"
-      >
-        <option>Preguntas tipo test</option>
-        <option>Flashcards</option>
-        <option>Resumen</option>
-      </select>
-
+      {/* Textarea para el texto */}
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Pega aquí el texto o tema..."
-        className="w-full max-w-xl p-3 border rounded mb-4 h-48"
+        placeholder="Pega aquí el texto . . ."
+        className="w-full max-w-xl p-4 rounded-2xl h-48 mb-6
+             bg-gradient-to-br from-gray-800 via-gray-900 to-indigo-950
+             border border-gray-700 text-gray-100
+             placeholder-gray-400 focus:outline-none
+             focus:ring-2 focus:ring-purple-500 focus:border-purple-400
+             shadow-lg shadow-purple-900/30 transition-all duration-300
+             hover:shadow-purple-500/20 hover:border-purple-400 animate-slide-in-left"
       />
+      {/* Barra de acciones */}
+      <ActionBar handleGenerate={handleGenerate} handleClearText={handleClearText} loading={loading} />
 
-      <button
-        onClick={handleGenerate}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        disabled={loading}
-      >
-        {loading ? "Generando..." : "✨ Generar"}
-      </button>
 
       {result && (
         <div className="mt-6 w-full max-w-xl bg-white shadow p-4 rounded">

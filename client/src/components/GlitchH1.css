@@ -10,7 +10,9 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     transition: all 0.3s ease;
-    animation: flicker 1.5s infinite; /* Animación de flicker automática */
+    animation: flicker 2.5s infinite; /* Animación de flicker automática */
+     /* Responsive font-size */
+     font-size: clamp(2.5rem, 8vw, 6rem);
 }
 
 .glitch::before,

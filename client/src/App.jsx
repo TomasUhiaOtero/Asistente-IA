@@ -34,16 +34,25 @@ function App() {
     setResult("");
     setQuestions([]);
     setQuizMode(false);
-
     try {
-      const res = await axios.post("http://localhost:3000/generate", { text, mode, });
+      const res = await axios.post("http://localhost:3000/generate", { text, mode })
+      console.log("📦 Respuesta completa del servidor:", res);
+
       if (res.data.success) {
-        setQuestions(res.data.data.questions); // array de preguntas
-        setQuizMode(true); // mostrar el modo examen
+        // Si el modo es test, mostramos preguntas
+        if (mode === "Preguntas tipo test") {
+          setQuestions(res.data.data.questions);
+          setQuizMode(true);
+        } else {
+          // Si es resumen o flashcards → mostramos el texto devuelto
+          setResult(res.data.data.text || res.data.raw || "Sin contenido disponible.");
+        }
       } else {
-        setResult(res.data.raw || "Error al generar preguntas"); // mostrar mensaje de error
+        setResult(res.data.raw || "Error al generar contenido");
+
       }
-    } catch (err) {
+    }
+    catch (err) {
       console.error(err);
       alert("Error al generar contenido");
     } finally {
@@ -90,6 +99,7 @@ function App() {
       {/* Barra de acciones */}
       <ActionBar handleGenerate={handleGenerate} handleClearText={handleClearText} loading={loading} />
 
+      {/* Si quizMode esta en true muestra el test */}
       {quizMode && (
         <div className="w-full max-w-xl mt-6 p-4 rounded-2xl
                   bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950
@@ -124,24 +134,24 @@ function App() {
           ))}
 
           <div className="flex justify-end gap-2 mt-4">
+            {/* Si showResults esta en false se meustra el boton para corregir, que cambia el estado a true y despues muestra el de finalizar que devuelve a false*/}
+            {!showResults && (
+              <button
+                onClick={handleCheckTest}
+                className=" bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl shadow-md transition"
+              >
+                Corregir test
+              </button>
+            )}
 
-          {!showResults && (
-            <button
-              onClick={handleCheckTest}
-              className=" bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl shadow-md transition"
-            >
-              Corregir test
-            </button>
-          )}
-
-          {showResults && (
-            <button
-              onClick={handleFinishTest}
-              className=" bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl shadow-md transition ml-2"
-            >
-              Finalizar examen
-            </button>
-          )}
+            {showResults && (
+              <button
+                onClick={handleFinishTest}
+                className=" bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl shadow-md transition ml-2"
+              >
+                Finalizar examen
+              </button>
+            )}
 
           </div>
 
@@ -149,18 +159,26 @@ function App() {
       )}
 
 
-
+      {/*Si resultado es true muestra lo que devuelve la api */}
       {result && (
-        <div
-          className="w-full max-w-xl mt-6 p-4 rounded-2xl
-               bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950
-               border border-gray-700 text-gray-100
-               shadow-lg shadow-purple-900/30 animate-fade-in"
-        >
-          <h2 className="text-2xl font-bold text-purple-400 mb-3">📖 Resultado:</h2>
-          <pre className="whitespace-pre-wrap text-gray-200 leading-relaxed">
-            {result}
-          </pre>
+        <div className="w-full max-w-xl mt-8">
+          <div
+            className="flex items-start gap-3 p-5 rounded-2xl
+           bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950
+           border border-purple-700/40 shadow-lg shadow-purple-900/40
+           text-gray-100 animate-fade-in relative overflow-hidden"
+          >
+            {/* Icono IA animado */}
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-800/40 animate-pulse">
+              🤖
+            </div>
+
+            {/* Texto generado */}
+            <div
+              className="prose prose-indigo text-gray-100"
+              dangerouslySetInnerHTML={{ __html: result }}
+            />
+          </div>
         </div>
       )}
     </div>

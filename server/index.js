@@ -11,7 +11,7 @@ app.use(express.json());
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.post("/generate", async (req, res) => {
-  console.log("Peticion recibida: ", req.body);
+  console.log("📩 Petición recibida:", req.body);
 
   try {
     const { text, mode } = req.body;
@@ -38,12 +38,21 @@ app.post("/generate", async (req, res) => {
             No incluyas explicaciones, títulos ni texto fuera del JSON.
             `;
     } else if (mode === "Flashcards") {
-      prompt = `Crea 10 flashcards educativas visualmente atractivas con emoticonos etc (Pregunta / Respuesta) a partir de este texto:\n\n${text}`;
+      prompt = `Crea 10 flashcards educativas (Pregunta / Respuesta) visualmente atractivas con emojis.
+                Devuelve un texto claro y estructurado, no JSON.
+        
+                Texto: """${text}"""`;
     } else {
-      prompt = `Resume este texto en 150 palabras:\n\n${text} destacando en negrita las palabras clave del resumen`;
+      prompt = `Resume este texto en 150 palabras con formato HTML amigable para mostrar en una app de IA:
+                - Usa <p> para párrafos.
+                - Usa <strong> para palabras clave o conceptos importantes.
+                - Si tiene sentido, añade un título corto <h3> al principio.
+                - No incluyas texto fuera del HTML.
+
+                Texto: """${text}"""`;
     }
 
-    console.log("Llamando a OpenAI... ");
+    console.log("🧠 Llamando a OpenAI... ");
 
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini",
@@ -58,24 +67,27 @@ app.post("/generate", async (req, res) => {
       temperature: 0.7,
     });
 
-    console.log("Respuesta de OpenAI: ", response.choices[0].message.content);
-
     const raw = response.choices[0].message.content;
+    console.log("📝 Respuesta de OpenAI:", raw);
 
-    const cleaned = raw.replace(/```json|```/gi, "").trim();
+    const cleaned = raw.replace(/```[a-z]*|```/gi, "").trim();
 
-    let data;
-    
-    try {
-      data = JSON.parse(cleaned); // parseamos el JSON
-      res.json({ success: true, data });
-    } catch (err) {
-      console.error("Error al parsear JSON:", err.message);
-      res.json({ success: false, raw }); // enviamos raw si falló
+    // Si es un test, esperamos JSON. En cualquier otro caso, devolvemos texto.
+    if (mode === "Preguntas tipo test") {
+      try {
+        const data = JSON.parse(cleaned);
+        res.json({ success: true, data });
+      } catch (err) {
+        console.error("❌ Error al parsear JSON:", err.message);
+        res.json({ success: false, raw: cleaned });
+      }
+    } else {
+      // Flashcards o resumen → se envía texto/HTML sin parsear
+      res.json({ success: true, data: { text: cleaned } });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to generate response" });
+    console.error("🔥 Error en el servidor:", error);
+    res.status(500).json({ error: "Error interno al generar contenido." });
   }
 });
 

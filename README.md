@@ -61,7 +61,17 @@ Ideal para **estudiantes o autodidactas** que quieren estudiar de forma más efi
 
 ## ⚙️ Instalación y configuración
 
-### 1. Clonar el repositorio
 ```bash
+# 1. Clonar el repositorio
 git clone https://github.com/TomasUhiaOtero/Asistente-IA.git
 cd Asistente-IA
+
+# 2. Iniciar el servidor (Backend)
+cd server
+npm install        # instalar dependencias
+node index.js      # iniciar el servidor Node.js
+
+# 3. Iniciar el cliente (Frontend)
+cd ../client
+npm install        # instalar dependencias
+npm run dev        # iniciar la aplicación web

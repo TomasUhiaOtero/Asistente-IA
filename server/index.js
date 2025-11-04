@@ -38,10 +38,26 @@ app.post("/generate", async (req, res) => {
             No incluyas explicaciones, títulos ni texto fuera del JSON.
             `;
     } else if (mode === "Flashcards") {
-      prompt = `Crea 10 flashcards educativas (Pregunta / Respuesta) visualmente atractivas con emojis.
-                Devuelve un texto claro y estructurado, no JSON.
-        
-                Texto: """${text}"""`;
+      prompt = `
+                Genera 12 flashcards educativas basadas en el siguiente texto:
+                """${text}"""
+
+                Cada flashcard debe tener una pregunta y una respuesta breve y clara. 
+                Si es posible, incluye emojis educativos o relacionados con el tema. 
+
+                Devuelve **únicamente JSON válido** con esta estructura exacta:
+
+                {
+                  "flashcards": [
+                    {
+                      "id": 1,
+                      "question": "¿Qué es React? ⚛️",
+                      "answer": "Es una biblioteca de JavaScript para construir interfaces de usuario."
+                    }
+                  ]
+                }
+
+                No incluyas texto fuera del JSON.`;
     } else {
       prompt = `Resume este texto en 150 palabras con formato HTML amigable para mostrar en una app de IA:
                 - Usa <p> para párrafos.
@@ -72,8 +88,8 @@ app.post("/generate", async (req, res) => {
 
     const cleaned = raw.replace(/```[a-z]*|```/gi, "").trim();
 
-    // Si es un test, esperamos JSON. En cualquier otro caso, devolvemos texto.
-    if (mode === "Preguntas tipo test") {
+    // Si es un test o flashcards esperamos JSON. En cualquier otro caso, devolvemos texto.
+    if (mode === "Preguntas tipo test" || mode === "Flashcards") {
       try {
         const data = JSON.parse(cleaned);
         res.json({ success: true, data });
@@ -82,7 +98,7 @@ app.post("/generate", async (req, res) => {
         res.json({ success: false, raw: cleaned });
       }
     } else {
-      // Flashcards o resumen → se envía texto/HTML sin parsear
+      // Si es resumen → texto/HTML plano
       res.json({ success: true, data: { text: cleaned } });
     }
   } catch (error) {

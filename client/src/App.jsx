@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import CustomSelect from "./components/customSelect";
 import ActionBar from "./components/actionBar";
 import GlitchH1 from "./components/GlitchH1";
+import Flashcard from "./components/Flashcard";
 import axios from "axios";
 
 function App() {
@@ -24,6 +25,35 @@ function App() {
     console.log("Respuestas almacenadas:", answers);
   }, [answers]);
 
+  // Función para transformar texto plano a HTML estilizado
+  function formatTextToHTMLWithAnimation(text) {
+    if (!text) return "";
+
+    // Si viene como objeto (por ejemplo { text: "..."}), extraemos el campo
+    if (typeof text === "object" && text.text) {
+      text = text.text;
+    }
+
+    if (typeof text !== "string") {
+      console.warn("⚠️ formatTextToHTMLWithAnimation recibió un valor no string:", text);
+      return "";
+    }
+
+    const lines = text.split("\n").filter(line => line.trim() !== "");
+    let html = "";
+
+    lines.forEach((line, index) => {
+      const delay = index * 200;
+      if (index === 0) {
+        html += `<h3 class="text-xl font-bold mb-6 fade-in-up" style="animation-delay: ${delay}ms">${line}</h3>`;
+      } else {
+        html += `<p class="mb-4 fade-in-up" style="animation-delay: ${delay}ms">${line}</p>`;
+      }
+    });
+
+    return html;
+  }
+
 
 
   // Llamada a la API para generar el contenido
@@ -39,17 +69,14 @@ function App() {
       console.log("📦 Respuesta completa del servidor:", res);
 
       if (res.data.success) {
-        // Si el modo es test, mostramos preguntas
         if (mode === "Preguntas tipo test") {
           setQuestions(res.data.data.questions);
           setQuizMode(true);
+        } else if (mode === "Flashcards") {
+          setResult(res.data.data); // Guarda directamente el JSON con flashcards
         } else {
-          // Si es resumen o flashcards → mostramos el texto devuelto
           setResult(res.data.data.text || res.data.raw || "Sin contenido disponible.");
         }
-      } else {
-        setResult(res.data.raw || "Error al generar contenido");
-
       }
     }
     catch (err) {
@@ -63,8 +90,6 @@ function App() {
   // Función para borrar el texto
   const handleClearText = () => {
     setText("");
-    setResult("");
-
   };
 
   function handleFinishTest() {
@@ -158,9 +183,21 @@ function App() {
         </div>
       )}
 
+      {mode === "Flashcards" && result?.flashcards && (
+        <div className="w-full max-w-4xl mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+          {result.flashcards.map((card) => (
+            <Flashcard
+              key={card.id}
+              question={card.question}
+              answer={card.answer}
+            />
+          ))}
+        </div>
+      )}
+
 
       {/*Si resultado es true muestra lo que devuelve la api */}
-      {result && (
+      {result && mode !== "Flashcards" && (
         <div className="w-full max-w-xl mt-8">
           <div
             className="flex items-start gap-3 p-5 rounded-2xl
@@ -175,8 +212,8 @@ function App() {
 
             {/* Texto generado */}
             <div
-              className="prose prose-indigo text-gray-100"
-              dangerouslySetInnerHTML={{ __html: result }}
+              className="prose prose-indigo text-gray-100 max-w-full"
+              dangerouslySetInnerHTML={{ __html: formatTextToHTMLWithAnimation(result) }}
             />
           </div>
         </div>

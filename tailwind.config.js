@@ -5,5 +5,5 @@ import animations from "@midudev/tailwind-animations";
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: { extend: {} },
-  plugins: [animations],
+  plugins: [animations, require("@tailwindcss/typography")],
 };

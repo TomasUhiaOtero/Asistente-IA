@@ -3,6 +3,7 @@ import CustomSelect from "./components/customSelect";
 import ActionBar from "./components/actionBar";
 import GlitchH1 from "./components/GlitchH1";
 import Flashcard from "./components/Flashcard";
+import Footer from "./components/Footer";
 import axios from "axios";
 
 function App() {
@@ -218,6 +219,8 @@ function App() {
           </div>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 }
